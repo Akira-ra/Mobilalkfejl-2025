@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">FurnitureWebshop</string>
+    <string name="loginText">Bejelentkezés</string>
+    <string name="email">Email</string>
+    <string name="password">Jelszó</string>
+    <string name="name">Név</string>
+    <string name="registerText">Regisztráció</string>
+    <string name="passwordAgain">Jelszó újra</string>
+    <string name="cancel">Mégsem</string>
+    <string name="guestLogin">Bejelentkezés vendégként</string>
+
+
+
+    <!-- room items -->
+    <string-array name="roomItemNames">
+        <item>Konyha</item>
+        <item>Étkező</item>
+        <item>Hálószoba</item>
+    </string-array>
+
+    <array name="roomItemImages">
+        <item>@drawable/kitchen</item>
+        <item>@drawable/diningroom</item>
+        <item>@drawable/bedroom</item>
+    </array>
+
+    <!-- furniture items -->
+    <string-array name="furnitureRoomNames">
+        <item>Konyha</item>
+        <item>Étkező</item>
+        <item>Hálószoba</item>
+    </string-array>
+
+    <string-array name="furnitureItemNames">
+        <item>Étkező szett</item>
+        <item>Asztal</item>
+        <item>Gardrób</item>
+    </string-array>
+
+    <string-array name="furnitureItemDetails">
+        <item>A szett egy asztalt és 4 széket tartalmaz. Kezeletlen, tömör fenyőből készült.</item>
+        <item>2–4 fő számára ideálisa, szinte bárhol elfér. Tömör akácból készült, minden darab egyedi.</item>
+        <item>Klasszikus gardrób, alapvető funkciókkat.</item>
+    </string-array>
+
+    <string-array name="furnitureItemPrices">
+        <item>59.900Ft</item>
+        <item>54.990Ft</item>
+        <item>176.000Ft</item>
+    </string-array>
+
+    <array name="furnitureItemImages">
+        <item>@drawable/haegernaes_asztal_es_4_szek</item>
+        <item>@drawable/nackanaes_asztal</item>
+        <item>@drawable/pax_forsand_gardrob</item>
+    </array>
+</resources>

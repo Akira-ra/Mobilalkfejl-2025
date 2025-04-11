@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="20dp">
+        <ImageView
+            android:id="@+id/furnitureImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true" />
+
+        <TextView
+            android:id="@+id/furnitureName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/furnitureImage"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:padding="10dp"
+            android:text="Bútor neve"
+            android:textColor="?android:textColorSecondary" />
+
+        <TextView
+            android:id="@+id/furnitureDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/furnitureName"
+            android:padding="10dp"
+            android:text="Bútor ára"
+            android:textColor="?android:textColorSecondary" />
+
+        <TextView
+            android:id="@+id/furniturePrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/furnitureDetails"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:padding="10dp"
+            android:text="Bútor ára"
+            android:textColor="?android:textColorSecondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addToBasket"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/furniturePrice"
+            android:text="Kosárba"
+            app:icon="@drawable/shopping_basket_24px"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

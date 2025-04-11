@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/searchBar"
+            android:title="Keresés"
+            app:showAsAction="always"
+            app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+        <item
+            android:id="@+id/navRooms"
+            app:showAsAction="always"
+            android:icon="@drawable/chair_24px"
+            android:title="Szobák"/>
+        <item
+            android:id="@+id/navBasket"
+            app:showAsAction="always"
+            android:icon="@drawable/shopping_basket_24px"
+            android:title="Kosár"/>
+        <item
+            android:id="@+id/navProfile"
+            app:showAsAction="always"
+            android:icon="@drawable/account_circle_24px"
+            android:title="Profil"/>
+        <item
+            android:id="@+id/navSettings"
+            app:showAsAction="always"
+            android:icon="@drawable/settings_24px"
+            android:title="Beállítások"/>
+        <item
+            android:id="@+id/navLogout"
+            app:showAsAction="always"
+            android:icon="@drawable/logout_24px"
+            android:title="Kijelentkezés"/>
+    </group>
+
+</menu>
