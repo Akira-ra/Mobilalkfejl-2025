@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String LOG_TAG = RegisterActivity.class.getName();
@@ -31,11 +32,15 @@ public class RegisterActivity extends AppCompatActivity {
     private static final int SECRET_KEY = 99;
     private SharedPreferences preferences;
     private FirebaseAuth firebaseAuth;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     EditText nameET;
     EditText emailET;
     EditText passwordET;
     EditText passwordAgainET;
+    EditText cityET;
+    EditText postcodeET;
+    EditText streetET;
 
 
     @Override
@@ -63,6 +68,9 @@ public class RegisterActivity extends AppCompatActivity {
         emailET = findViewById(R.id.registerEmail);
         passwordET = findViewById(R.id.registerPassword);
         passwordAgainET = findViewById(R.id.registerPasswordAgain);
+        cityET = findViewById(R.id.registerCity);
+        postcodeET = findViewById(R.id.registerPostNr);
+        streetET = findViewById(R.id.registerStreet);
 
         preferences = getSharedPreferences(PREF_KEY, MODE_PRIVATE);
         String name = preferences.getString("name", "");
@@ -77,13 +85,18 @@ public class RegisterActivity extends AppCompatActivity {
         Log.i(LOG_TAG, "onCreate");
     }
 
+
+
     public void register(View view) {
         String name = nameET.getText().toString();
         String email = emailET.getText().toString();
         String password = passwordET.getText().toString();
         String passwordConfirm = passwordAgainET.getText().toString();
+        String city = cityET.getText().toString();
+        String postcode = postcodeET.getText().toString();
+        String street = streetET.getText().toString();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty() || city.isEmpty() || postcode.isEmpty() || street.isEmpty()) {
             Toast.makeText(this, "Adj meg minden adatot!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -99,8 +112,19 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Log.d(LOG_TAG, "Új felhasználó létrehozása sikeres");
-                    goToRoomListActivity();
+
+                    String userId = firebaseAuth.getCurrentUser().getUid();
+                    UserItem user = new UserItem(name, email, city, postcode, street);
+
+                    db.collection("Users").document(userId).set(user)
+                            .addOnSuccessListener(unused -> {
+                                Log.d(LOG_TAG, "Felhasználói adatok mentve Firestore-ba.");
+                                goToRoomListActivity();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.w(LOG_TAG, "Hiba a Firestore mentésnél: ", e);
+                                Toast.makeText(RegisterActivity.this, "Hiba történt a felhasználó mentésekor.", Toast.LENGTH_LONG).show();
+                            });
                 } else {
                     Log.d(LOG_TAG, "Új felhasználó létrehozása sikertelen");
                     Toast.makeText(RegisterActivity.this, "Új felhasználó létrehozása sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();

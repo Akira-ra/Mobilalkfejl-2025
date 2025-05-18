@@ -60,8 +60,7 @@ public class FurnitureInBasketAdapter extends RecyclerView.Adapter<FurnitureInBa
         public void bindTo(FurnitureItem currentItem) {
             this.furnitureName.setText(currentItem.getName());
             this.furnitureDetails.setText(currentItem.getDetails());
-            this.furniturePrice.setText(currentItem.getPrice());
-            Glide.with(context).load(currentItem.getImage()).into(furnitureImage);
+            this.furniturePrice.setText(currentItem.getPrice() + " Ft");
         }
     }
 }

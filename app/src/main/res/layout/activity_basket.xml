@@ -23,4 +23,25 @@
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar"/>
 
+    <Button
+        android:id="@+id/btnPlaceOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:text="Rendelés leadása"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="A kosarad üres"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textSize="18sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="32dp"/>
+
 </RelativeLayout>

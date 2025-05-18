@@ -2,31 +2,37 @@ package com.example.furniturewebshop;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.helper.widget.Grid;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BasketActivity extends AppCompatActivity {
     private static final String LOG_TAG = BasketActivity.class.getName();
@@ -44,7 +50,6 @@ public class BasketActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onCreate() meghívva!");
         EdgeToEdge.enable(this);
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-        getWindow().setExitTransition(new Slide());
         getWindow().setExitTransition(new Slide());
         setContentView(R.layout.activity_basket);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -66,56 +71,63 @@ public class BasketActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, gridNumber));
-        furnitureItemArrayList = new ArrayList<>();
-        furnitureInBasketAdapter = new FurnitureInBasketAdapter(furnitureItemArrayList, this);
+
+        furnitureItemArrayList = new ArrayList<>(BasketManager.getInstance().getItems());
+        furnitureInBasketAdapter = new FurnitureInBasketAdapter(furnitureItemArrayList, BasketActivity.this);
         recyclerView.setAdapter(furnitureInBasketAdapter);
 
-        Log.d(LOG_TAG, "Adapter item count: " + furnitureInBasketAdapter.getItemCount());
-
-        initializeData();
-    }
-
-    private void initializeData() {
-        String[] furnitureNames = getResources().getStringArray(R.array.furnitureItemNames);
-        String[] furnitureDetails = getResources().getStringArray(R.array.furnitureItemDetails);
-        String[] furniturePrices = getResources().getStringArray(R.array.furnitureItemPrices);
-        TypedArray furnitureImage = getResources().obtainTypedArray(R.array.furnitureItemImages);
-
-        furnitureItemArrayList.clear();
-
-        for (int i = 0; i < furnitureNames.length; i++) {
-            FurnitureItem item = new FurnitureItem("placeholder", furnitureNames[i], furnitureDetails[i], furniturePrices[i], furnitureImage.getResourceId(i, 0));
-            furnitureItemArrayList.add(item);
-            Log.d(LOG_TAG, "Items size: " + furnitureItemArrayList.size());
-            Log.d(LOG_TAG, "Item added: " + item);
+        TextView emptyView = findViewById(R.id.emptyView);
+        if (furnitureItemArrayList.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
         }
 
-        furnitureImage.recycle();
+        Button btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
+        btnPlaceOrder.setOnClickListener(v -> {
+            if (furnitureItemArrayList.isEmpty()) {
+                Toast.makeText(BasketActivity.this, "A kosarad üres!", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        furnitureInBasketAdapter.notifyDataSetChanged();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String userId = firebaseUser.getUid();
+
+            for (FurnitureItem item : furnitureItemArrayList) {
+                Map<String, Object> order = new HashMap<>();
+                order.put("item", item.getName());
+                order.put("quantity", 1);
+                order.put("totalprice", item.getPrice());
+                order.put("userid", userId);
+                order.put("timestamp", new Timestamp(new Date()));
+
+                db.collection("Purchases")
+                        .add(order)
+                        .addOnSuccessListener(documentReference -> Log.d(LOG_TAG, "Rendelés mentve: " + documentReference.getId()))
+                        .addOnFailureListener(e -> Log.w(LOG_TAG, "Hiba a mentéskor", e));
+            }
+
+            Toast.makeText(BasketActivity.this, "Rendelések sikeresen leadva!", Toast.LENGTH_LONG).show();
+
+            BasketManager.getInstance().clearBasket();
+            furnitureItemArrayList.clear();
+            furnitureInBasketAdapter.notifyDataSetChanged();
+
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        });
 
         Log.d(LOG_TAG, "Adapter item count: " + furnitureInBasketAdapter.getItemCount());
-    }
 
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         Log.d(LOG_TAG, "onCreateOptionsMenu() meghívva!");
         getMenuInflater().inflate(R.menu.nav_menu, menu);
-        MenuItem menuItem = menu.findItem(R.id.searchBar);
-        SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
         return true;
     }
 

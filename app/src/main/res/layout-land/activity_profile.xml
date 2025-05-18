@@ -52,8 +52,10 @@
 
         <TextView
             android:id="@+id/profileName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginTop="56dp"
             android:padding="10dp"
             android:text="Név"
@@ -65,8 +67,10 @@
 
         <TextView
             android:id="@+id/profileEmail"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginTop="44dp"
             android:padding="10dp"
             android:text="Email"
@@ -76,18 +80,50 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileName" />
 
-        <TextView
-            android:id="@+id/profileDeliveryInfo"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/profileCity"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="44dp"
-            android:padding="10dp"
-            android:text="Szállítási adatok"
-            android:textColor="?android:textColorSecondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="14dp"
+            android:ems="12"
+            android:hint="Város"
+            android:inputType="text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profileEmail"
+            app:layout_constraintVertical_bias="0.06"
+            tools:layout_editor_absoluteX="24dp" />
+
+        <EditText
+            android:id="@+id/profilePostNr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="14dp"
+            android:ems="12"
+            android:hint="Irányítószám"
+            android:inputType="number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profileCity"
+            app:layout_constraintVertical_bias="0.06"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <EditText
+            android:id="@+id/profileStreet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="14dp"
+            android:ems="12"
+            android:hint="Utca és házszám"
+            android:inputType="text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePostNr"
+            app:layout_constraintVertical_bias="0.06"
+            tools:layout_editor_absoluteX="0dp" />
 
         <View
             android:layout_width="0dp"
@@ -95,9 +131,11 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:background="#CCCCCC"
-            app:layout_constraintTop_toBottomOf="@+id/profileDeliveryInfo"
+            app:layout_constraintTop_toBottomOf="@+id/profileStreet"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+
 
         <Button
             android:id="@+id/editProfileDetails"
@@ -110,7 +148,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profileDeliveryInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/profileStreet" />
 
         <Button
             android:id="@+id/deleteProfile"

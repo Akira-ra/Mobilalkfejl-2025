@@ -5,10 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +29,7 @@ public class FurnitureItemAdapter extends RecyclerView.Adapter<FurnitureItemAdap
         this.furnitureItemsData = furnitureItemsData;
         this.allFurnitureItemsData = furnitureItemsData;
         this.context = context;
+
     }
 
     @Override
@@ -44,6 +47,12 @@ public class FurnitureItemAdapter extends RecyclerView.Adapter<FurnitureItemAdap
     public void onBindViewHolder(@NonNull FurnitureItemAdapter.ViewHolder holder, int position) {
         FurnitureItem currentItem = furnitureItemsData.get(position);
         holder.bindTo(currentItem);
+
+        holder.addToBasket.setOnClickListener(v -> {
+            BasketManager.getInstance().addItem(currentItem);
+            Toast.makeText(context, "Kosárba helyezve: " + currentItem.getName(), Toast.LENGTH_SHORT).show();
+        });
+
     }
 
     @Override
@@ -57,12 +66,14 @@ public class FurnitureItemAdapter extends RecyclerView.Adapter<FurnitureItemAdap
         private TextView furnitureDetails;
         private TextView furniturePrice;
         private ImageView furnitureImage;
+        private Button addToBasket;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.furnitureName = itemView.findViewById(R.id.furnitureName);
             this.furnitureDetails = itemView.findViewById(R.id.furnitureDetails);
             this.furniturePrice = itemView.findViewById(R.id.furniturePrice);
             this.furnitureImage = itemView.findViewById(R.id.furnitureImage);
+            this.addToBasket = itemView.findViewById(R.id.addToBasket);
 
             itemView.findViewById(R.id.addToBasket).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -76,8 +87,14 @@ public class FurnitureItemAdapter extends RecyclerView.Adapter<FurnitureItemAdap
         public void bindTo(FurnitureItem currentItem) {
             this.furnitureName.setText(currentItem.getName());
             this.furnitureDetails.setText(currentItem.getDetails());
-            this.furniturePrice.setText(currentItem.getPrice());
-            Glide.with(context).load(currentItem.getImage()).into(furnitureImage);
+            this.furniturePrice.setText(String.valueOf(currentItem.getPrice()));
+
+            String imageName = currentItem.getImage().replace(".jpg", "");
+            int imageResId;
+            imageResId = context.getResources().getIdentifier(
+                    imageName, "drawable", context.getPackageName());
+            Log.d("FurnitureItemAdapter", "Image name: " + imageName + ", ResID: " + imageResId);
+            furnitureImage.setImageResource(imageResId);
         }
     }
 }

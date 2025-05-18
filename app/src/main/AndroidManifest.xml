@@ -13,6 +13,9 @@
         android:theme="@style/Theme.FurnitureWebshop"
         tools:targetApi="31">
         <activity
+            android:name=".PurchaseHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".RoomListActivity"
             android:exported="false" />
         <activity

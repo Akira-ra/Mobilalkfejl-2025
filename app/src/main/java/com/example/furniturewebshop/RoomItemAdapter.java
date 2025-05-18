@@ -7,18 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
-public class RoomItemAdapter extends RecyclerView.Adapter<RoomItemAdapter.ViewHolder> implements Filterable {
+public class RoomItemAdapter extends RecyclerView.Adapter<RoomItemAdapter.ViewHolder>{
     private ArrayList<RoomItem> roomItemsData;
     private ArrayList<RoomItem> allRoomItemsData;
     private Context context;
@@ -45,48 +42,16 @@ public class RoomItemAdapter extends RecyclerView.Adapter<RoomItemAdapter.ViewHo
         holder.browseFurnitureButton.setOnClickListener(v -> {
             Context context = v.getContext();
             Intent intent = new Intent(context, FurnitureByRoomActivity.class);
+            intent.putExtra("roomId", currentItem.getId());
             context.startActivity(intent);
         });
+
     }
 
     @Override
     public int getItemCount() {
         return roomItemsData.size();
     }
-
-    @Override
-    public Filter getFilter() {
-        return roomFilter;
-    }
-    private Filter roomFilter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            ArrayList<RoomItem> filteredList = new ArrayList<>();
-            FilterResults filterResults = new FilterResults();
-
-            if (constraint == null || constraint.length() == 0) {
-                filterResults.count = allRoomItemsData.size();
-                filterResults.values = allRoomItemsData;
-            } else {
-                String filterPattern = constraint.toString().toLowerCase().trim();
-                for(RoomItem roomItem : allRoomItemsData) {
-                    if (roomItem.getName().toLowerCase().contains(filterPattern)) {
-                        filteredList.add(roomItem);
-                    }
-                }
-                filterResults.count = filteredList.size();
-                filterResults.values = filteredList;
-            }
-
-            return filterResults;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            roomItemsData = (ArrayList)results.values;
-            notifyDataSetChanged();
-        }
-    };
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView roomName;
@@ -109,7 +74,13 @@ public class RoomItemAdapter extends RecyclerView.Adapter<RoomItemAdapter.ViewHo
 
         public void bindTo(RoomItem currentItem) {
             this.roomName.setText(currentItem.getName());
-            Glide.with(context).load(currentItem.getImage()).into(roomImage);
+
+            String imageName = currentItem.getImage().replace(".jpg", "");
+            int imageResId;
+            imageResId = context.getResources().getIdentifier(
+                    imageName, "drawable", context.getPackageName());
+            Log.d("RoomItemAdapter", "Image name: " + imageName + ", ResID: " + imageResId);
+            roomImage.setImageResource(imageResId);
         }
     }
 }

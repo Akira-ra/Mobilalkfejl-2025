@@ -10,7 +10,6 @@
     <string name="guestLogin">Bejelentkezés vendégként</string>
 
 
-
     <!-- room items -->
     <string-array name="roomItemNames">
         <item>Konyha</item>
@@ -20,7 +19,7 @@
 
     <array name="roomItemImages">
         <item>@drawable/kitchen</item>
-        <item>@drawable/diningroom</item>
+        <item>@drawable/dining_room</item>
         <item>@drawable/bedroom</item>
     </array>
 
@@ -49,9 +48,4 @@
         <item>176.000Ft</item>
     </string-array>
 
-    <array name="furnitureItemImages">
-        <item>@drawable/haegernaes_asztal_es_4_szek</item>
-        <item>@drawable/nackanaes_asztal</item>
-        <item>@drawable/pax_forsand_gardrob</item>
-    </array>
 </resources>

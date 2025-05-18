@@ -4,11 +4,13 @@ public class FurnitureItem {
     private String roomId;
     private String name;
     private String details;
-    private String price;
+    private long price;
 
-    private final int image;
+    private String image;
 
-    public FurnitureItem(String roomId, String name, String details, String price, int image) {
+    public FurnitureItem(){}
+
+    public FurnitureItem(String roomId, String name, String details, long price, String image) {
         this.roomId = roomId;
         this.name = name;
         this.details = details;
@@ -16,7 +18,7 @@ public class FurnitureItem {
         this.image = image;
     }
 
-    public String getRoom() {
+    public String getRoomId() {
         return roomId;
     }
 
@@ -28,11 +30,11 @@ public class FurnitureItem {
         return details;
     }
 
-    public String getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public int getImage() {
+    public String getImage() {
         return image;
     }
 }

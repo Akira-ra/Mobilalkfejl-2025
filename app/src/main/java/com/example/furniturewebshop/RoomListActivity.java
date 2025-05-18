@@ -6,6 +6,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
@@ -23,8 +24,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.appcompat.widget.SearchView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -39,13 +47,15 @@ public class RoomListActivity extends AppCompatActivity {
     private RoomItemAdapter roomItemAdapter;
     private int gridNumber = 1;
 
+    private FirebaseFirestore firebaseFirestore;
+    private CollectionReference firestoreItems;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-        getWindow().setExitTransition(new Slide());
-        getWindow().setExitTransition(new Slide());
+        getWindow().setExitTransition(new Fade());
         setContentView(R.layout.activity_room_list);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -71,19 +81,33 @@ public class RoomListActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(roomItemAdapter);
 
-        initializeData();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        firestoreItems = firebaseFirestore.collection("RoomItem");
+
+        queryData();
     }
+
+    private void queryData() {
+        roomItemArrayList.clear();
+        firestoreItems.orderBy("name").get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    RoomItem room = doc.toObject(RoomItem.class);
+                    roomItemArrayList.add(room);
+                }
+                roomItemAdapter.notifyDataSetChanged();
+        });
+    }
+
     private void initializeData() {
         String[] roomList = getResources().getStringArray(R.array.roomItemNames);
-        TypedArray roomImage = getResources().obtainTypedArray(R.array.roomItemImages);
+        String[] roomImage = getResources().getStringArray(R.array.roomItemImages);
 
         roomItemArrayList.clear();
 
         for (int i = 0; i < roomList.length; i++) {
-            roomItemArrayList.add(new RoomItem("placeholder", roomList[i], roomImage.getResourceId(i, 0)));
+            roomItemArrayList.add(new RoomItem("placeholder", roomList[i], roomImage[i]));
         }
-
-        roomImage.recycle();
 
         roomItemAdapter.notifyDataSetChanged();
     }
@@ -132,7 +156,6 @@ public class RoomListActivity extends AppCompatActivity {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
             finish();
             //TODO
-            finish();
             return true;
         } else if (id == R.id.navBasket) {
             Log.d(LOG_TAG, "Basket clicked!");

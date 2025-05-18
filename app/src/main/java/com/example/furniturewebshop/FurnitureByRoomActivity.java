@@ -2,8 +2,10 @@ package com.example.furniturewebshop;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
@@ -23,12 +25,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class FurnitureByRoomActivity extends AppCompatActivity {
     private static final String LOG_TAG = FurnitureByRoomActivity.class.getName();
     private FirebaseUser firebaseUser;
+    private FirebaseFirestore db;
 
     private RecyclerView recyclerView;
     private ArrayList<FurnitureItem> furnitureItemArrayList;
@@ -36,14 +45,15 @@ public class FurnitureByRoomActivity extends AppCompatActivity {
 
     private int gridNumber = 1;
 
+    private DocumentSnapshot lastVisible = null;
+    private boolean isLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-        getWindow().setExitTransition(new Slide());
-        getWindow().setExitTransition(new Slide());
+        getWindow().setExitTransition(new Fade());
         setContentView(R.layout.activity_furniture_by_room);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -69,25 +79,76 @@ public class FurnitureByRoomActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(furnitureItemAdapter);
 
-        initializeData();
-    }
-
-    private void initializeData() {
-        String[] furnitureNames = getResources().getStringArray(R.array.furnitureItemNames);
-        String[] furnitureDetails = getResources().getStringArray(R.array.furnitureItemDetails);
-        String[] furniturePrices = getResources().getStringArray(R.array.furnitureItemPrices);
-        TypedArray furnitureImage = getResources().obtainTypedArray(R.array.furnitureItemImages);
-
-        furnitureItemArrayList.clear();
-
-        for (int i = 0; i < furnitureNames.length; i++) {
-            furnitureItemArrayList.add(new FurnitureItem("placeholder", furnitureNames[i], furnitureDetails[i], furniturePrices[i], furnitureImage.getResourceId(i, 0)));
+        String roomId = getIntent().getStringExtra("roomId");
+        if (roomId != null) {
+            queryDataByRoomId(roomId, true);
+        } else {
+            Log.e(LOG_TAG, "Nincs roomId átadva!");
         }
 
-        furnitureImage.recycle();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-        furnitureItemAdapter.notifyDataSetChanged();
+                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && !isLoading) {
+                    int totalItemCount = layoutManager.getItemCount();
+                    int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+
+                    if (lastVisibleItemPosition >= totalItemCount - 1) {
+                        String roomId = getIntent().getStringExtra("roomId");
+                        if (roomId != null) {
+                            queryDataByRoomId(roomId, false);
+                        }
+                    }
+                }
+            }
+        });
+
     }
+
+
+
+    private void queryDataByRoomId(String roomId, boolean isInitialLoad) {
+        if (isLoading) return;
+        isLoading = true;
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query = db.collection("FurnitureItem")
+                .whereEqualTo("roomId", roomId)
+                .orderBy("name")
+                .limit(2);
+
+        if (!isInitialLoad && lastVisible != null) {
+            query = query.startAfter(lastVisible);
+        }
+
+        query.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (isInitialLoad) {
+                        furnitureItemArrayList.clear();
+                    }
+
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        lastVisible = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            FurnitureItem item = doc.toObject(FurnitureItem.class);
+                            furnitureItemArrayList.add(item);
+                        }
+                        furnitureItemAdapter.notifyDataSetChanged();
+                    }
+
+                    isLoading = false;
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG, "Firestore lekérdezés hiba: ", e);
+                    isLoading = false;
+                });
+    }
+
 
 
     @Override

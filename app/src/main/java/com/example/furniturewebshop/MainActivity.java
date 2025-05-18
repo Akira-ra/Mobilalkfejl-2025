@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         getWindow().setExitTransition(new Slide());
-        getWindow().setExitTransition(new Slide());
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
